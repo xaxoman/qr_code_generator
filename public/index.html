@@ -5,12 +5,63 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Generatore qrcode</title>
 </head>
 <body>
-    <p>Hello World!</p>
 
+    <!-- 
 
-     <script src="../index.js"></script>
+    ### **3. QR Code Generator** (Intermediate)
+
+    **Description:** A web app that generates a QR code based on user input (e.g., URL, text).
+
+    **Features:**
+
+    - Uses the **QR Code API** (like `qrcode` NPM package or an external API like goqr.me)
+    - Simple form where users enter text and get a downloadable QR code
+    - Express server to handle API requests
+    -->
+    <div id="qrcode_container">
+        <h1>Generatore QR Code</h1>
+        <form id="qrcode_form">
+            <label for="qrcode_text">Inserisci il testo per generare il QR Code</label>
+            <input type="text" id="qrcode_text" name="qrcode_text" placeholder="Inserisci il testo.." required>
+            <button type="submit">Genera QR Code</button>
+        </form>
+        <img id="qrcode_result" src="#" alt="qrcode_result"></img>
+    </div>
+
+    <script>
+        const qrcodeForm = document.getElementById('qrcode_form');
+        const qrcodeText = document.getElementById('qrcode_text');
+        const qrcodeResult = document.getElementById('qrcode_result');
+
+        qrcodeForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                if (qrcodeText.value !== '') {
+                    const response = await fetch(`/qrcode?text=${encodeURIComponent(qrcodeText.value)}`);
+                    // spiega: il server risponde con un html e non un json
+                    const qrCodeHtml = await response.text(); // contieni il codice html del qr code
+                    const tempDiv = document.createElement('div'); 
+                    tempDiv.innerHTML = qrCodeHtml; // inserisci il codice html nel div
+                    
+                     // prendi l'attributo src dell'immagine e lo metti in imgSrc
+                    const imgSrc = tempDiv.querySelector('img').src;
+                    
+                    qrcodeResult.style.display = 'block';
+                    qrcodeResult.src = imgSrc;
+                } else {
+                    alert('Inserisci il testo per generare il QR Code');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                qrcodeResult.innerText = 'Oops! fetch del QR Code non riuscito.';
+            }
+        });
+    </script>
+
+ <script src="../index.js"></script> 
 </body>
 </html>
